@@ -91,6 +91,14 @@ void init(){
 
 void follow();
 
+void releaseRest(struct linkedList *list){
+	if(list->next != NULL){
+		releaseRest(list->next);
+	}
+	free(list);
+	
+}
+
 void explore(){
 	while(true){
 		rightSensor = ADCRead(adc[0])*1000;
@@ -131,14 +139,14 @@ void explore(){
 				if (!endFound) {	
 					if(pastCells[locCurrent] != 1){				//Check for repeat cell in crit path
 						struct linkedList *link;
-						link->value = locCurrent;						
-						
 						struct linkedList *list = criticalPath;
+						link->value = locCurrent;												
 						for(;list->next != NULL; list = list->next);
 						list->next = link;
 					}else{
 						struct linkedList *list = criticalPath;
 						for(;list->value == locCurrent || list->next != NULL; list = list->next);
+						releaseRest(list->next);
 						list->next = NULL;
 					}
 						
